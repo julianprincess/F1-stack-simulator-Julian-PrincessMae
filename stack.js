@@ -1,72 +1,140 @@
 
 class Stack {
     constructor() {
-        this.items = []
-        this.count = 0
-         
+        this.items = [];
+        this.count = 0;
     }
 
     // Add element to top of stack
     push(element) {
-        this.items[this.count] = element
-        let push_res=`${element}`; //console.log(`added to ${this.count}`);
-        this.count += 1;
-        let count=this.count -1;
-        //return [push_res,count];
-        return [push_res, count];
+        this.items[this.count] = element;
+        this.count++;
+
+        return element;
     }
 
-    // Return and remove top element in stack
-    // Return undefined if stack is empty
+    // Remove top element from stack
     pop() {
-        if(this.count == 0) return undefined
-        let deleteItem = this.items[this.count - 1]
-        this.count -= 1
-        console.log(`${deleteItem} removed`)
-        return deleteItem
+        if (this.isEmpty()) {
+            return undefined;
+        }
+
+        let deleteItem = this.items[this.count - 1];
+
+        this.items.pop();
+        this.count--;
+
+        return deleteItem;
     }
 
-    // Check top element in stack
+    // Check top element
     peek() {
-        console.log(`Top element is ${this.items[this.count - 1]}`)
-        return this.items[this.count - 1]
+        if (this.isEmpty()) {
+            return undefined;
+        }
+
+        return this.items[this.count - 1];
     }
 
     // Check if stack is empty
     isEmpty() {
-        console.log(this.count == 0 ? 'Stack is empty' : 'Stack is NOT empty')
-        return this.count == 0
+        return this.count === 0;
     }
 
     // Check size of stack
     size() {
-        console.log(`${this.count} elements in stack`)
-        return this.count
+        return this.count;
     }
 
-    // Print elements in stack
+    // Print elements
     print() {
-        let str = ''
-        for(let i = 0; i < this.count; i++) {
-            str += this.items[i] + ' '
-        }
-        return str
+        return this.items.join(' ');
     }
 
     // Clear stack
     clear() {
-        this.items = []
-        this.count = 0
-        console.log('Stack cleared..')
-        return this.items
+        this.items = [];
+        this.count = 0;
+
+        return this.items;
     }
 }
 
-const stack = new Stack()
+const stack = new Stack();
 
-$(document).ready(function(){
-    $("#stack").prepend(`<div class="row bg-primary push">${stack.push(100)[0]}</div>`);
-    $("#stack").prepend(`<div class="row bg-success push">${stack.push(200)[0]}</div>`);
-    $("#stack").prepend(`<div class="row bg-primary push">${stack.push(300)[0]}</div>`);
-    $("#stack").prepend(`<div class="row bg-success push">${stack.push(400)[0]}</div>`);
+$(document).ready(function () {
+
+    function displayStack() {
+        $("#stack").empty();
+
+        for (let i = stack.count - 1; i >= 0; i--) {
+            let block = $("<div>")
+                .addClass("row push")
+                .addClass(i === stack.count - 1 ? "bg-success" : "bg-primary")
+                .text(stack.items[i]);
+
+            if (i === stack.count - 1) {
+                block.addClass("top-element");
+            }
+
+            $("#stack").append(block);
+        }
+    }
+
+    // Push button
+    $("#push").click(function () {
+        let value = $("#data").val().trim();
+
+        if (value === "") {
+            alert("Please enter a value.");
+            return;
+        }
+
+        stack.push(value);
+        $("#data").val("");
+
+        displayStack();
+    });
+
+    // Pop button
+    $("#pop").click(function () {
+        let removed = stack.pop();
+
+        if (removed === undefined) {
+            alert("Stack is empty. Nothing to remove.");
+            return;
+        }
+
+        $("#deleted").prepend(
+            $("<div>")
+                .addClass("row pop text-bg-danger border border-light")
+                .text(removed)
+        );
+
+        displayStack();
+    });
+
+    // Peek button
+    $("#peek").click(function () {
+        let top = stack.peek();
+
+        if (top === undefined) {
+            alert("Stack is empty. Nothing to peek.");
+            return;
+        }
+
+        displayStack();
+
+        $(".top-element").addClass("highlight");
+    });
+
+    // Clear button
+    $("#clear").click(function () {
+        stack.clear();
+
+        $("#stack").empty();
+        $("#deleted").empty();
+        $("#data").val("");
+    });
+
 });
